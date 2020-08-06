@@ -42,5 +42,4 @@ public class ShuffleTab implements TabCompleter {
 		subcommandList.add("state");
 		// ...
 	}
-
 }

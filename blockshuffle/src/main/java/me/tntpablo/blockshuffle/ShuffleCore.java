@@ -1,5 +1,6 @@
 package me.tntpablo.blockshuffle;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,9 @@ public class ShuffleCore {
     // Cada bloques se mapea a true si ya ha salido
     private List<Material> blocks = new ArrayList<Material>();
     private List<Material> availableBlocks = new ArrayList<Material>();
+    List<Player> finished = new ArrayList<Player>();
+
+    private int countdown = 0;
 
     public ShuffleConfig config = new ShuffleConfig();
 
@@ -114,11 +118,11 @@ public class ShuffleCore {
     }
 
     public void checkList() {
-        if (alivePlayers.size() == 1){
-            msgAll("El jugador &l" +alivePlayers.get(0).getName()+ " &rha ganado! Enhorabuena!");
+        if (alivePlayers.size() == 1) {
+            msgAll("El jugador &l" + alivePlayers.get(0).getName() + " &rha ganado! Enhorabuena!");
             stop();
         }
-        if(alivePlayers.size()<=0){
+        if (alivePlayers.size() <= 0) {
             msgAll("Tenemos un empate! Gracias por jugar!");
             stop();
         }
@@ -126,7 +130,6 @@ public class ShuffleCore {
 
     public void start(Player sender) {
         // Condiciones para poder empezar la partida
-
         if (this.gameState != GameState.OFFLINE) {
             sender.sendMessage(Utils.chat("La partida ya ha comenzado, no se puede empezar otra!"));
             return;
@@ -149,7 +152,7 @@ public class ShuffleCore {
 
     private void roundStart() {
         this.gameState = GameState.STARTING;
-
+        countdown = config.startingTime;
         for (Player p : alivePlayers) {
             updateScoreboard(p);
         }
@@ -163,15 +166,15 @@ public class ShuffleCore {
                     msgAll("Quedan " + Utils.timeReminder(timeLeft) + timeLeft + "&f segundos!");
 
                 timeLeft--;
+                countdown = timeLeft;
                 if (gameState != GameState.STARTING)
                     this.cancel();
                 if (timeLeft == 0) {
                     roundRun();
                     this.cancel();
                 }
-
                 for (Player p : alivePlayers)
-                    updateScoreboardTime(p, timeLeft);
+                    updateScoreboard(p);
             }
 
         }.runTaskTimer(plugin, 20, 20);
@@ -179,15 +182,14 @@ public class ShuffleCore {
 
     private void roundRun() {
         this.gameState = GameState.RUNNING;
-
+        countdown = config.roundTime;
         giveBlocks();
-
         for (Player p : alivePlayers) {
             updateScoreboard(p);
         }
+        finished.clear();
         new BukkitRunnable() {
             int timeLeft = config.roundTime;
-            List<Player> finished = new ArrayList<Player>();
 
             @Override
             public void run() {
@@ -196,6 +198,7 @@ public class ShuffleCore {
                 if (gameState != GameState.RUNNING)
                     this.cancel();
                 timeLeft--;
+                countdown = timeLeft;
                 if (finished.size() == alivePlayers.size()) {
                     msgAll("Todos los jugadores han encontrado su bloque! Comenzando siguiente ronda...");
                     roundStart();
@@ -227,7 +230,7 @@ public class ShuffleCore {
                         p.sendMessage(Utils.chat("Has encontrado el bloque!"));
                     }
 
-                    updateScoreboardTime(p, timeLeft);
+                    updateScoreboard(p);
                 }
 
             }
@@ -242,10 +245,14 @@ public class ShuffleCore {
             @Override
             public void run() {
                 gameState = GameState.OFFLINE;
-                players.clear();
                 alivePlayers.clear();
+
+                players.clear();
                 lives.clear();
                 objectiveBlocks.clear();
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    updateScoreboard(p);
+                }
                 Bukkit.broadcastMessage(Utils.chat("Partida de BlockShuffle finalizada!"));
             }
         }.runTaskLater(plugin, 20);
@@ -284,10 +291,58 @@ public class ShuffleCore {
 
     public void updateScoreboard(Player p) {
 
-    }
+        if (!players.contains(p)) {
+            // Quitar scoreboard si el jugador no esta en la lista de jugadores
+            p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            return;
+        }
+        List<String> scoreboardEntries = new ArrayList<String>();
 
-    private void updateScoreboardTime(Player p, int timeLeft) {
-
+        LocalTime timeOfDay = LocalTime.ofSecondOfDay(countdown);
+        String timeLeft = timeOfDay.toString();
+        // ignorar horas
+        if (timeLeft.substring(0, 2).equalsIgnoreCase("00")) {
+            timeLeft = timeLeft.substring(3);
+        }
+        switch (gameState) {
+            case OFFLINE:
+                scoreboardEntries.add("Esperando...");
+                scoreboardEntries.add("SPACE");
+                scoreboardEntries.add("Jugadores: &b" + players.size());
+                break;
+            case STARTING:
+                scoreboardEntries.add("Jugadores vivos: &b" + this.alivePlayers.size() + "/" + this.players.size());
+                scoreboardEntries.add("SPACE");
+                scoreboardEntries.add("Siguiente ronda en: &b" + timeLeft);
+                if (alivePlayers.contains(p)) {
+                    scoreboardEntries
+                            .add("Tus vidas: " + Utils.warningColor(lives.get(p), config.lives) + lives.get(p));
+                } else {
+                    scoreboardEntries.add("Has sido eliminado!");
+                }
+                break;
+            case RUNNING:
+                scoreboardEntries.add("Jugadores vivos: &b" + this.alivePlayers.size() + "/" + this.players.size());
+                scoreboardEntries.add("SPACE");
+                scoreboardEntries.add("Tiempo restante: &b" + timeLeft);
+                scoreboardEntries.add("SPACE");
+                scoreboardEntries.add("Progreso:");
+                for (Player player : alivePlayers) {
+                    if (finished.contains(player))
+                        scoreboardEntries.add("&a&l \u2713 &r&a" + player.getName());
+                    else
+                        scoreboardEntries.add("&c&l \u2717 &r&c" + player.getName());
+                }
+                scoreboardEntries.add("SPACE");
+                if (alivePlayers.contains(p)) {
+                    scoreboardEntries
+                            .add("Tus vidas: " + Utils.warningColor(lives.get(p), config.lives) + lives.get(p));
+                } else {
+                    scoreboardEntries.add("Has sido eliminado!");
+                }
+                break;
+        }
+        Utils.setScoreboard(p, "&e&lBlock&f&lShuffle", scoreboardEntries);
     }
 
     public GameState getGameState() {
