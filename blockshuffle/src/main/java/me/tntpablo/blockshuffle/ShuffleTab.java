@@ -37,6 +37,9 @@ public class ShuffleTab implements TabCompleter {
 		// Crear la lista de subcomandos
 		subcommandList.add("join");
 		subcommandList.add("leave");
+		subcommandList.add("start");
+		subcommandList.add("stop");
+		subcommandList.add("state");
 		// ...
 	}
 

@@ -4,12 +4,12 @@ import org.bukkit.ChatColor;
 
 public class Utils {
 	public static String error(String msg) {
-		return ChatColor.translateAlternateColorCodes('&', "&l&a[ &fThe &2&lBridge&l&a ]&r&f &4&l ERROR: &r&f" + msg);
+		return ChatColor.translateAlternateColorCodes('&', "&l&a[ &3Block &4&lShuffle&l&a ]&r&f &4&l ERROR: &r&f" + msg);
 	}
 
 	public static String chat(String msg) {
 		// Mensajes generales
-		return ChatColor.translateAlternateColorCodes('&', "&l&a[ &fThe &2&lBridge&l&a ]&r&f " + msg);
+		return ChatColor.translateAlternateColorCodes('&', "&l&a[ &3Block &4&lShuffle&l&a ]&r&f " + msg);
 	}
 
 	public static String color(String msg) {
@@ -25,12 +25,11 @@ public class Utils {
 		// Mensajes por excepciones, errores del usuario...
 		switch (label.toLowerCase()) {
 		case "usage":
-			//TODO		
-			return chat("Uso correcto: ...");
+			return chat("Uso correcto: /blockshuffle <comando>");
 		case "lowplayer":
 			return chat("No hay suficientes jugadores!");
 		case "noimplement":
-			return chat("Opcion aun no implementada!");
+			return chat("Comando aun no implementado!");
 		case "full":
 			return chat("La partida esta llena!");
 		case "notenoughplayers":
@@ -57,6 +56,11 @@ public class Utils {
 			return "&c";
 		else
 			return null;
+	}
 
+	public static String formattedString(String s){
+		String firstLetter = s.substring(0,1);
+		String nextLetters = s.substring(1);
+		return firstLetter.toUpperCase()+nextLetters.toLowerCase().replace('_', ' ');
 	}
 }

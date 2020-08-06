@@ -1,0 +1,6 @@
+lives: 3
+starting-time: 5
+round-time: 30
+difficulty: easy
+# Competitive true -> Mismos bloques para todos // Competitive false -> Bloques aleatorios para cada jugador
+competitive: true
