@@ -1,0 +1,8 @@
+main: me.tntpablo.blockshuffle.Main
+name: tntBlockShuffle
+version: 1.0
+author: tntpablo
+api-version: 1.16 # PLUGIN PARA LA 1.16
+commands:
+  blockshuffle:
+     description: Comando principal
