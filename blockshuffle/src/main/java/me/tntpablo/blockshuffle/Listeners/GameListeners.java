@@ -1,5 +1,6 @@
 package me.tntpablo.blockshuffle.Listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,12 +14,15 @@ public class GameListeners implements Listener {
 
     GameListeners(Main plugin) {
         this.plugin = plugin;
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
+        Bukkit.broadcastMessage("TEST");
         Player p = e.getPlayer();
         if (plugin.shuffleCore.isAlive(p)) {
+            Bukkit.broadcastMessage("TEST 2");
             new BukkitRunnable() {
                 int timeLeft = 60;
                 @Override

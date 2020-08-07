@@ -1,6 +1,12 @@
+# numero de vidas
 lives: 3
+# tiempo pre-ronda
 starting-time: 5
-round-time: 30
+# tiempo de ronda
+round-time: 300
+# sin usar de momento
 difficulty: easy
-# Competitive true -> Mismos bloques para todos // Competitive false -> Bloques aleatorios para cada jugador
+# multiplicador para valor nuevo de tiempo en cada ronda, 1.00 -> no hay modificacion // 0.xy -> en cada ronda se reduce el tiempo un xy% respecto a la anterior ronda
+time-shrink: 0.90
+# competitive true -> Mismos bloques para todos // competitive false -> Bloques aleatorios para cada jugador
 competitive: true

@@ -1,5 +1,6 @@
 package me.tntpablo.blockshuffle;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,16 @@ public class ShuffleCommand implements CommandExecutor {
                         plugin.shuffleCore.playerJoin(p);
                         break;
                     case "leave":
-                        plugin.shuffleCore.playerLeave(p);
+                        plugin.shuffleCore.playerLeave(p, true);
+                        break;
+                    case "forcestart":
+                        for (Player pl : Bukkit.getOnlinePlayers()) {
+                            plugin.shuffleCore.playerJoin(pl);
+                        }
+                        plugin.shuffleCore.start(p);
+                        break;
+                    case "reload":
+                        plugin.shuffleCore.reloadConfig(p);
                         break;
                     case "state":
                         p.sendMessage(Utils.chat(

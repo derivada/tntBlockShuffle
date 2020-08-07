@@ -10,22 +10,14 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class Utils {
-	public static String error(String msg) {
-		return ChatColor.translateAlternateColorCodes('&',
-				"&l&a[ &3Block &4&lShuffle&l&a ]&r&f &4&l ERROR: &r&f" + msg);
-	}
 
 	public static String chat(String msg) {
 		// Mensajes generales
-		return ChatColor.translateAlternateColorCodes('&', "&l&a[ &3Block &4&lShuffle&l&a ]&r&f " + msg);
+		return ChatColor.translateAlternateColorCodes('&', "&l&b[&r&fBlock &a&lShuffle&l&b]&r&f  " + msg);
 	}
 
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', "&f" + msg);
-	}
-
-	public static String consoleChat(String msg) {
-		return "[The Bridge] " + msg;
 	}
 
 	public static String pluginMsg(String label) {
@@ -46,24 +38,6 @@ public class Utils {
 				return chat("El juego esta terminando!");
 		}
 		return null;
-	}
-
-	public static String timeReminder(int n) {
-
-		if ((n > 60) && (n % 60 == 0))
-			// 60, 120, 180...
-			return "&a";
-		else if (n > 15 && n <= 60 && (n % 15 == 0))
-			// 45 30 15
-			return "&e";
-		else if (n > 5 && n <= 15 && (n % 5 == 0))
-			// 10 5
-			return "&6";
-		else if (n >= 1 && n <= 5)
-			// 4 3 2 1
-			return "&c";
-		else
-			return null;
 	}
 
 	public static String formattedString(String s) {
@@ -104,6 +78,7 @@ public class Utils {
 	}
 
 	public static String warningColor(int value, int maxValue) {
+		// Unused, pero puede que se use en el futuro
 		double percentage = (double) value / maxValue;
 
 		if (percentage > (2/3))
@@ -113,5 +88,16 @@ public class Utils {
 			return "&e";
 
 		return "&c";
+	}
+
+	public static String hpString(int HP, int maxHP){
+		String result = "";
+		for(int i = 1; i<=HP; i++){
+			result = result.concat("&c\u2764");
+		}
+		for (int i = HP; i<maxHP;i++){
+			result = result.concat("&7\u2764");
+		}
+		return result;
 	}
 }

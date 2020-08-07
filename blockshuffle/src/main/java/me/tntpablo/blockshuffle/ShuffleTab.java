@@ -40,6 +40,8 @@ public class ShuffleTab implements TabCompleter {
 		subcommandList.add("start");
 		subcommandList.add("stop");
 		subcommandList.add("state");
+		subcommandList.add("forcestart");
+		subcommandList.add("reload");
 		// ...
 	}
 }
